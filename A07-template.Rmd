@@ -255,8 +255,10 @@ Trips %>%
     xlab('Trip Distance (km)')
 ```
 
+The visualization shows that the pairwise distance between stations has a larger spread than trip distance, which is skewed to the right (i.e., most trips are short, whereas a fair number of station-station distances are quite large: these routes are probably not used very often).
+
 #### Extra Credit: Joining and Variable Names in R
 
 Look at the variables in `Stations` and `Trips` and explain why `Simple` and `Simple2` were given different variable names for the station. 
 
-Optional Extra credit answer here.....
+`Simple` and `Simple2` were given different variable names for the station because we want start station-end station pairs, which serves as the composite key on which we join the resulting table to the `Trips` table. If we don't explicitly change the name of the `name` variable, then we won't have a composite key on which to join the resulting table to the `Trips` table.
