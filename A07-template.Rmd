@@ -167,8 +167,28 @@ I'm not sure there's much of a trend along this scale, other than that the numbe
 Group the bike rentals by three variables: hour of the day, day of the week, and client type. Find the total number of events in each grouping and plot this count versus hour. Use the group aesthetic to represent one of the other variables and faceting to represent the other. Comment on any general trends you see.
 
 ```{r}
-### My Code here
+Trips %>%
+  mutate(
+    HOD = lubridate::hour(sdate),
+    DOW = lubridate::wday(sdate),
+  ) %>%
+  group_by(HOD, DOW, client) %>%
+  summarize(total = n()) %>%
+  head()
 
+Trips %>%
+  mutate(
+    HOD = lubridate::hour(sdate),
+    DOW = lubridate::wday(sdate),
+  ) %>%
+  group_by(HOD, DOW, client) %>%
+  summarize(total = n()) %>%
+  ggplot(mapping = aes(x = HOD, y = total)) +
+    geom_line(mapping = aes(color = client)) + # the `group` aesthetic is unnecessary when using the `color` aesthetic
+    geom_point() +
+    facet_wrap(. ~ DOW) +
+    xlab('H') +
+    scale_x_continuous(breaks = 0:23)
 ```
 
 My comments here.....
