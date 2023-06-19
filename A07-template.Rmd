@@ -191,11 +191,9 @@ Trips %>%
     scale_x_continuous(breaks = 0:23)
 ```
 
-My comments here.....
-
+Generally, registered clients rent more bikes than casual clients across hour of the day and across day of the week. On an hourly basis, however, casual client rentals usually reach a maximum in the afternoon, when registered client rentals dip in between morning and evening rush hour. Also, casual client rentals peak over the weekend, when registered client rentals drop the most.
 
 ## Question 4: How Far? 
-
 
 Our goal is to find the distance between each pair of stations. You know the position from the lat and long variables in `Stations`. This is enough information to find the distance. The calculation has been implemented in the `haversine()` function. We can import the `haversine()` function using the following command. 
 
@@ -203,9 +201,7 @@ Our goal is to find the distance between each pair of stations. You know the pos
 source("https://mdbeckman.github.io/dcSupplement/R/haversine.R")
 ```
 
-
 `haversine()` is a transformation function. To use it, create a data table where a case is a pair of stations and there are variables for the latitude and longitude of the starting station and the ending station. To do this, join the Station data to itself. The following statements show how to create appropriately named variables for joining.
-
 
 ```{r}
 Simple <-
@@ -221,12 +217,9 @@ Simple2 <-
 
 Look at the `head()` of `Simple` and `Simple2` and make sure you understand how they are related to `Stations.`
 
-
 The joining of `Simple` and `Simple2` should match every station to every other station. Since a ride can start and end at the same station, it also makes sense to match each station to itself. This sort of matching does not make use of any matching variables; everything is matched to everything else. This is called a **full outer join**. See Lecture L09 to read more about joins. Note, we can also use the `merge()` function for full outer joins. See the help file for more details.  
 
-
 We perform the full outer join and then use `haversine()` to compute the distance between each pair of stations.
-
 
 ```{r}
 #full outer join
@@ -240,30 +233,30 @@ PairDistances <-
 
 ```
 
-
 Once you have `PairDistances`, you can join it with `Trips` to calculate the start-to-end distance of each trip. An `inner_join()` is appropriate for finding the distance of each ride.
 
 Display the distribution of the ride distances of the rides. Compare it to the distances between pairs of stations. Are they similar? Why or why not?
 
 Our goal here is to recreate [Figure 18.5](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count). For this assignment, it is sufficient to make each density on its own plot. There is 1 point of extra credit if you can make the two densities on the same plot. 
 
-
-
 ```{r}
-### My code here
-
+Trips %>%
+  inner_join(PairDistances, by = c('sstation', 'estation')) %>%
+  ggplot(aes(x = distance)) +
+    geom_density(
+      color = 'blue'
+    ) +
+    geom_density(
+      alpha = 0.2,
+      color = NA,
+      data  = PairDistances,
+      fill  = 'red'
+    ) +
+    xlab('Trip Distance (km)')
 ```
-
-
-
 
 #### Extra Credit: Joining and Variable Names in R
 
 Look at the variables in `Stations` and `Trips` and explain why `Simple` and `Simple2` were given different variable names for the station. 
 
 Optional Extra credit answer here.....
-
-
-
-
-

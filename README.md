@@ -16,7 +16,6 @@ The data are slightly larger for this activity when compared to most of the othe
 
 ## Grading
 
-
 Assignment is worth a total of 10 points.
 
 - Turn in HTML with embedded .Rmd file 
@@ -34,7 +33,6 @@ Assignment is worth a total of 10 points.
     - [1 point extra credit] if two plots are on the same frame
 - [1 point] changes pushed to GitHub with at least 3 commits
 - [1 point] extra credit: Joining and Variable Names in R explanation
-
 
 ## Submit
 
