@@ -1,7 +1,7 @@
 ---
-title: "A07- ggplot"
-author: "YOUR NAME"
-date: "DATE"
+title:  "A07 - ggplot"
+author: "Dave Friedman"
+date:   "19 Jun 2023"
 output: html_notebook
 ---
 
@@ -18,17 +18,35 @@ You can access the data from the Capital Bikeshare web site. Doing this requires
 - `Stations` giving information about location of each of the stations in the system.
 - `Trips` is a random subset of 10,000 trips from the full quarterly data, giving the rental history over the last quarter of 2014 (Q4).
 
-
 ```{r}
+R.version.string
+.libPaths()
+
+library(dcData)
+library(lubridate)
 library(tidyverse)
 
-station_url <- "https://mdbeckman.github.io/dcSupplement/data/DC-Stations.csv"
-Stations <- readr::read_csv(station_url)
-    
-trip_url <- "https://mdbeckman.github.io/dcSupplement/data/Trips-History-Data-2014-Q4-Small.rds"
-Trips <- readRDS(gzcon(url(trip_url)))
-```
+# information about the location of each of the stations in the system
+station_url <- 'https://mdbeckman.github.io/dcSupplement/data/DC-Stations.csv'
+Stations    <- readr::read_csv(station_url)
+# the rental history from 2014 Q4
+#   the `Trips` data table is a random subset of 10,000 trips from the full quarterly data
+#   the full data set of more than 600,000 trips can be accessed by removing `-Small` from the url
+trip_url    <- 'https://mdbeckman.github.io/dcSupplement/data/Trips-History-Data-2014-Q4-Small.rds'
+Trips       <- readRDS(gzcon(url(trip_url)))
 
+# Stations <-
+#   Stations %>%
+#     select(lat, long)
+# Stations %>%
+#   head()
+
+# Trips <-
+#   Trips %>%
+#     select(sstation, estation, client, sdate, edate)
+# Trips %>%
+#   head()
+```
 
 In this activity, you’ll work with just a few variables:
 
@@ -36,7 +54,6 @@ From `Stations`:
 
 - the latitude (`lat`) and longitude (`long`) of the bicycle rental station
 - `name`: the station’s name
-
 
 From Trips: 
 
@@ -48,17 +65,16 @@ From Trips:
 
 (Notice that the location and time variables start with an “s” or an “e” to indicate whether the variable is about the **s**tart of a trip or the **e**nd of a trip.)
 
-
 Time/dates are typically stored as a special kind of number: a **POSIX** date. 
 
 **POSIX** date: A representation of date and time of day that facilitates using dates in the same way as numbers, e.g. to find the time elapsed between two dates. You can use `sdate` and `edate` in the same way that you would use a number. For instance, the figure below shows the distribution of times that bikes were checked out.
 
 ```{r}
+# the distribution of times that bikes were checked out
 Trips %>%
   ggplot(aes(x = sdate)) +
-  geom_density(fill = "gray", color = NA)
+    geom_density(fill = 'gray', color = NA)
 ```
-
 
 ## Question 1: How Long?  
 
@@ -66,21 +82,22 @@ Make a box-and-whisker plot, like Figure [18.2 of the Project: Bicycle Sharing](
 
 When you make your plot, you will likely find that the axis range is being set by a few outliers. These may be bikes that were forgotten. Arrange your scale to ignore these outliers, or filter them out.
 
-
 ```{r}
-### Your code here
-
-
+Trips %>%
+  mutate(duration = as.numeric(edate - sdate)) %>%
+  filter(duration <= 3600) %>%
+  ggplot() +
+    geom_boxplot(
+      mapping = aes(x = client, y = duration / 60)
+    ) +
+    labs(x = 'Type of Client', y = 'Trip Duration [min]')
 ```
-
 
 ## Question 2: When are bikes used?
 
 The `sdate` variable in Trips indicates the date and time of day that the bicycle was checked out of the parking station. `sdate` is stored as a special variable type that includes detailed information about the date and time. 
 
 Often, you will want discrete components of a date, for instance:
-
-
 
 |Date Component                         |	Function (`lubridate` package)|
 |---------------------------------------|-----------------------------|
@@ -98,52 +115,52 @@ Create **histograms or density plots** for bike use over the following discrete 
 
 You can use [Figure 18.3](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bikes-over-hours) or [Figure 18.4](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count) as examples.
 
-
 ### Day of Year
 
 ```{r}
-### Your Code Here
-
+Trips %>%
+  ggplot(aes(x = lubridate::yday(sdate))) +
+    geom_density(fill = 'gray', color = NA) +
+    xlab('Day of the Year')
 ```
 
-
-My observations here..... 
-
+Bike rentals are highest in October; decline in November; and pick up again in the first half of December.
 
 ### Day of Week
 
 ```{r}
-### Your Code Here
-
+Trips %>%
+  ggplot(aes(x = lubridate::wday(sdate))) +
+    geom_density(fill = 'gray', color = NA) +
+    xlab('Day of the Week') +
+    scale_x_continuous(breaks = 0:8)
 ```
 
-
-My observations here..... 
-
-
+Bike rentals are fairly stable over the course of the week; Thursday and Friday see the most rentals, and Saturday and Sunday see the least. Monday sees a little bit more than Tuesday and Wednesday.
 
 ### Hour of Day
 
 ```{r}
-### Your Code Here
-
+Trips %>%
+  ggplot(aes(x = lubridate::hour(sdate))) +
+    geom_density(fill = 'gray', color = NA) +
+    xlab('Hour of the Day') +
+    scale_x_continuous(breaks = 0:24)
 ```
 
-
-My observations here..... 
-
-
+Bike rentals are low before 5:00am; spike up during morning rush hour; decrease a bit throughout the day; spike back up during evening rush hour; and rapidly decline to early morning levels into the night.
 
 ### Minute of Hour
 
 ```{r}
-### Your Code Here
-
+Trips %>%
+  ggplot(aes(x = lubridate::minute(sdate))) +
+    geom_density(fill = 'gray', color = NA) +
+    xlab('Minute of the Hour') +
+    scale_x_continuous(breaks = 0:60)
 ```
 
-
-My observations here..... 
-
+I'm not sure there's much of a trend along this scale, other than that the numbers of rentals oscillate a bit (i.e., it is not fixed).
 
 ## Question 3: Grouping
 
